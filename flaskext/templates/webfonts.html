@@ -1,0 +1,361 @@
+{% extends "silpa.html" %}
+{% block modulescript %}
+<style>
+
+
+</style>
+<style type="text/css" media="screen">
+  .slider-selection {
+  background: #BABABA;
+  }
+
+  #collectioncontainer{
+  position:fixed;
+margin-bottom:0;
+padding:5px;
+  bottom:0;
+
+}
+</style>
+
+<link rel="stylesheet" href="{{url_for('static',filename='bootstrap/slider/css/slider.css')}}" type="text/css" media="screen" />
+<script type="text/javascript" src="{{url_for('static',filename='bootstrap/slider/js/bootstrap-slider.js')}}"></script>
+<script type="text/javascript">
+
+
+function contains(array, needle ) {
+   for (i in array) {
+if (array[i] == needle) return true;
+   }
+   return false;
+}
+  $(document).ready(function(){
+$("a[data-toggle='false']").on('shown', function (e) {
+console.log(e)
+})
+  $("form").submit(function(e){
+  e.preventDefault();
+  search_fonts();
+  })
+  })
+  var api_path = "{{ url_for('webfonts.serve',_external=True) }}"
+  function search_fonts(){
+  var selected_scripts =$('input[name=scripts]:checked').map(function() {
+  return $(this).val();  //get the <label>'s text
+    }).get();
+    console.log(selected_scripts)
+
+    var jsonRequest = {
+    "method" :  "webfonts.get_fonts_list",
+    "params" : [selected_scripts],
+    "id" : ""
+    };
+    id_result = $('#result');
+    id_error = $('#error');
+    id_progress = $('#progress');
+
+    $.ajax({
+    type: "POST",
+    contentType: "application/json; charset=utf-8",
+    url: "JSONRPC",
+    data: JSON.stringify(jsonRequest),
+    dataType: "json",
+    beforeSend:function(){
+    id_result.hide();
+    id_error.hide();
+    id_progress.html("Guessing. Please Wait...").show();
+    $("#fontslistheader").hide()
+    $("#fontslist").hide()
+
+    },
+    success: function(msg) {
+    var fonts = msg.result ;
+    $("head").append("<style>");
+      var headstyle = "<style type='tex/css'>";
+        $("#fontslistheader").html("Found "+fonts.length+ "  fonts that suits your search!").show()
+        $("#fontslist").html("").show();
+        var font_list =""
+        for(var index in fonts){var fd = fonts[index]
+        for(var key in fd)
+        font_list +=key+"|"
+        }
+        var css_link = api_path + "?font="+font_list
+        $("head").append("<link>");
+        css = $("head").children(":last");
+        css.attr({
+        rel: "stylesheet",
+        type: "text/css",
+        href: css_link
+        });
+
+        for(var index in fonts){
+        var font_details = fonts[index];
+        var fontname;
+        for (var key in font_details)
+        fontname = key;
+        headstyle+= "."+ fontname +"{ font-family:"+ fontname +",sans; font-size: 16px;}</style>";
+      $(headstyle).appendTo("head");
+      var fontdetailmarkup="";
+      fontdetailmarkup+="<div id='fontdetail"+fontname+"'>";
+        fontdetailmarkup+="</div>";
+      $(fontdetailmarkup).appendTo("#fontslist" );
+      fontdetailmarkup="<div id='"+fontname+"' >";
+        fontdetailmarkup+="<h1 style='font-family:"+fontname+",sans;'>" + font_details[fontname]['Name']+"</h1>";
+        fontdetailmarkup+="<div>License: "+font_details[fontname]['License']+"</div>";
+        fontdetailmarkup+="<div>Author: "+font_details[fontname]['Author']+"</div>";
+        fontdetailmarkup+="<div>Scripts Supported: "+font_details[fontname]['Scripts']+"</div>";
+        fontdetailmarkup+="<div>Family Contains: "+font_details[fontname]['Variants']+"</div>";
+        fontdetailmarkup+="</div>><button id='toggle"+fontname+"' class='btn btn-primary btn-small'>show more</button>";
+      fontdetailmarkup+='<div id="'+fontname+'info" class="hide"><ul class="nav nav-pills">'
+        fontdetailmarkup+='<li><a class="" href="#preview'+fontname+'" data-toggle="tab">preview</a></li>'
+        fontdetailmarkup+='<li><a class="" href="#glyphs'+fontname+'" data-toggle="tab">view glyphs</a></li>'
+        fontdetailmarkup+='<li><a class="togtab" href="#embed'+fontname+'" data-toggle="tab">quick use</a></li>'
+//  fontdetailmarkup+="<li><a href=\"javascript:addtocollection('"+fontname+"')\">add to collection</a></li>"
+        fontdetailmarkup+='</ul>'
+      fontdetailmarkup+="<div class='tab-content'><div class='active  tab-pane'  id='preview"+fontname+"' >";
+          fontdetailmarkup+="</div>";
+        fontdetailmarkup+="<div class='tab-pane fade '  id='glyphs"+fontname+"' >";
+          fontdetailmarkup+="</div>";
+        fontdetailmarkup +="<div class='tab-pane fade '  id='embed"+fontname+"' >";
+          fontdetailmarkup +="</div></div></div><hr />";
+      $(fontdetailmarkup).appendTo("#fontdetail"+fontname)
+      preview(fontname);
+      embed(fontname);
+      glyphs(font_details[fontname]['Glyphs'],fontname);
+      $("#toggle"+fontname).on('click',function(){
+$("#"+fontname+"info").toggle()
+})
+      }
+
+      $('#progress').hide();
+      },
+      error: function(msg) { id_error.html("Something went wrong...").show();
+      id_progress.hide()
+
+      }
+      });
+      }
+      function preview(fontname){
+      var previewmarkup = "<form class='form-horizontal'><div class='control-group'><label class='control-label'>Font size :</label> <div class='span12 pull-left controls ' id='sizeslider"+fontname+"'></div></div>";
+        previewmarkup += "<div class='control-group'><label class='control-label' >Letter Sapcing :</label> <div class='span12 controls pull-left' id='letterspacingslider"+fontname+"'></div></div>";
+        previewmarkup += "<div class='control-group'><label class='control-label'>Word Sapcing :</label> <div class='span12 controls' id='wordspacingslider"+fontname+"'></div></div>";
+        previewmarkup += "<div class='control-group'><label class='control-label'>Line Height :</label> <div class='span12 controls' id='lineheightslider"+fontname+"'></div></div>";
+        previewmarkup += "<div class='control-group'><label class='control-label'>Font Syle:</label> <select id='fontStyle"+fontname+"' name='fontStyle'>";
+            previewmarkup += "<option value='regular'>Regular</option>";
+            previewmarkup += "<option value='bold'>Bold</option>";
+            previewmarkup += "<option value='italic'>Italic</option></select> ";
+          previewmarkup += "<b>Shadow: </b><select id='fontShadow"+fontname+"' name='fontShadow'>";
+            previewmarkup += "<option value='2px 2px 2px #aaa'>2px 2px 2px #aaa</option>";
+            previewmarkup += "<option value='4px 4px 4px #bbb'>4px 4px 4px #bbb</option>";
+            previewmarkup += "<option value='6px 6px 6px #ccc'>6px 6px 6px #ccc</option>";
+            previewmarkup += "<option value='8px 8px 8px #ddd'>8px 8px 8px #ddd</option></select>";
+          previewmarkup +="<div style='float: left; width: 90%;padding:5px;'>";
+            previewmarkup += "<textarea class='span12 "+fontname+"' rows='8'id='previewtext"+fontname+"'></textarea>";
+            previewmarkup += "</div></form>";
+      $("#preview"+fontname).html(previewmarkup)
+      $("#previewtext"+fontname).css('font-family', fontname) ;
+      $("#previewtext"+fontname).css('font-size', '24px');
+
+
+      $("#sizeslider"+fontname).slider({
+      max: 60,
+      min : 8,
+      step : 2,
+      value : 24,
+      tooltip: 'hide',
+      }).on('slide',function(ev){      embed(fontname)
+      $("#previewtext"+fontname).css('font-size', ev.value);
+      });
+
+
+      $("#letterspacingslider"+fontname).slider({
+      max: 60,
+      min : -4,
+      step : 1,
+      tooltip: 'hide',
+      }).on('slide',function(ev){      embed(fontname)
+      $("#previewtext"+fontname).css('letter-spacing',ev.value);
+      });
+      $("#wordspacingslider"+fontname).slider({
+      max: 60,
+      min : 4,
+      step : 1,
+      tooltip: 'hide',
+      }).on('slide',function(ev){      embed(fontname)
+      $("#previewtext"+fontname).css('word-spacing',ev.value );
+
+
+      }) ;
+      $("#lineheightslider"+fontname).slider({
+      max: 3,
+      min : 0.5,
+      step : 0.1,
+      value : 1.0,
+      tooltip: 'hide',
+      }).on('slide',function(ev){      embed(fontname)
+      $("#previewtext"+fontname).css('line-height', ev.value );
+
+      }) ;
+      $('#fontStyle'+fontname ).change(function(){
+      var optionSelectedValue = $('#fontStyle'+fontname + ' option:selected').val();
+      $("#previewtext"+fontname).css('font-style', optionSelectedValue) ;
+      embed(fontname)
+      });
+      $('#fontShadow'+fontname ).change(function(){
+      var optionSelectedValue = $('#fontShadow'+fontname + ' option:selected').val();
+      $("#previewtext"+fontname).css('text-shadow', optionSelectedValue) ;
+      embed(fontname)
+      });
+      }
+
+
+
+
+
+
+      function glyphs(range, fontname){
+      console.log(fontname)
+      var start = range.split(":") [0]	;
+      var end = range.split(":") [1]	;
+      var tablemarkup='';
+      tablemarkup="<table class='table table-bordered "+fontname+" table-striped table-hover' id='glyphtable"+fontname+"' ><tr>";
+          var cols=0;
+          start = start*1;
+          end = end*1;
+          for(var i=start; i <= end ;i++){
+                                cols++;
+                                tablemarkup+="<td>&#"+ i  +";</td>";
+                                if(cols%8==0)	{
+                                tablemarkup+="</tr><tr>";
+                                cols=0;
+                                }
+                                }
+                                tablemarkup+="</tr></table>";
+                                $("#glyphs"+fontname).html(tablemarkup)
+                                $("#glyphtable"+fontname).css('font-family', fontname) ;
+                                $("#glyphtable"+fontname).css('font-size', '24px');
+                                }
+
+
+
+                                function embed(fontname){
+                                var csslink = api_path + "?font="+fontname;
+                                var embedmarkup="<br/><h3>Embedding "+fontname+" in your website:</h3>";
+                                embedmarkup+="<p>Adjust the above font style. Copy the  following css link  and add to ";
+                                embedmarkup+=" the &lt;head&gt; of your html document.</p><p>The API will generate the necessary CSS ";
+                                embedmarkup+=" specific to the user's browser.</p>";
+                                embedmarkup+="<pre>&lt;link rel='stylesheet' type='text/css' href='"+csslink+"' /&gt;</pre>";
+                                embedmarkup+="<pre>&lt;style&gt;";
+                                embedmarkup+="\nbody {\n ";
+                                embedmarkup+="\n   font-family:'"+fontname+"',serif; ";
+                                embedmarkup+="\n   font-size: "+$("#sizeslider"+fontname).data('slider').getValue()+"px;";
+                                embedmarkup+="\n   font-style: "+$('#fontStyle'+fontname + ' option:selected').val()+";";
+                                embedmarkup+="\n   text-shadow: "+$('#fontShadow'+fontname + ' option:selected').val()+";";
+                                embedmarkup+="\n   letter-spacing: "+$("#letterspacingslider"+fontname).data('slider').getValue()+"em;";
+                                embedmarkup+="\n   word-spacing: "+$("#wordspacingslider"+fontname).data('slider').getValue()+"em;";
+                                embedmarkup+="\n   line-height: "+$("#lineheightslider"+fontname).data('slider').getValue()+";";
+                                embedmarkup+="\n}\n ";
+                                embedmarkup+="&lt;/style&gt;</style></pre>";
+                                $("#embed"+fontname).html(embedmarkup)
+                                }
+
+
+var collection = []
+  function addtocollection(fname){
+if (!contains(collection,fname)){
+collection.push(fname)
+updatepanel()
+}
+}
+  function updatepanel(){
+$("#collection").html("Selected fonts:")
+for (var i in collection){
+  $("#collection").append("<span class='label label-info'>"+collection[i]+"</span>")
+}
+}
+                                function usecollection(){
+                                var collectioncss =api_path+"?"+collection.join("|")
+                                return collectioncss
+                                }
+
+
+                                </script>
+{% endblock %}
+{% block content %}
+<div class="well">
+  <h2>Webfonts</h2>
+</hr>
+  <p>Webfonts allows web designers to use custom fonts in the pages
+    without having the fonts installed in users computer. This technique
+    make usr of @font-face feature. Any modern webbrowser is capable of
+    using webfonts</p>
+  <p>Silpa provides a set of indic fonts that you can use in your
+    webpages. Users can see the pages in Indic languages even if the font is
+    not availabe in their computer. Silpa webfonts module simplifies the
+    usage of webfonts for developers by hosting available opensource fonts
+    in our sever and providing the easy to use css links.</p>
+  <h3>Search for Fonts</h3>
+  <form>
+    <div id="languageselection" >
+      <div class="span6"><label class="checkbox ">
+          <input type=checkbox name="scripts" value="Hindi" />Devanagari(Hindi, Kashmeeri, Marathi)<br />
+        </label>
+        <label class="checkbox">
+
+          <input type=checkbox name="scripts" value="Bengali" />Bengali<br />
+        </label>
+        <label class="checkbox ">
+          <input type=checkbox name="scripts" value="Punjabi" />Punjabi<br />
+        </label>
+        <label class="checkbox ">
+          <input type=checkbox name="scripts" value="Gujarati" />Gujarati<br />
+        </label>
+        <label class="checkbox ">
+          <input type=checkbox name="scripts" value="Malayalam" />Malayalam<br />
+        </label>
+        <label class="checkbox ">
+          <input type=checkbox name="scripts" value="Kannada" />Kannada<br />
+        </label>
+      </div>
+      <div class="span6">
+        <label class="checkbox ">
+          <input type=checkbox name="scripts" value="Telugu" />Telugu<br />
+        </label>
+        <label class="checkbox ">
+          <input type=checkbox name="scripts" value="Tamil" />Tamil<br />
+        </label>
+        <label class="checkbox ">
+          <input	type=checkbox name="scripts" value="Oriya">Odia<br />
+        </label>
+        <label class="checkbox ">
+          <input type=checkbox name="scripts" value="Sourashtra" />Sourashtra<br />
+        </label>
+        <label class="checkbox ">
+          <input type=checkbox name="scripts" value="Manipuri" />Manipuri(Meetei Mayek)<br />
+        </label>
+        <label class="checkbox ">
+          <input type=checkbox name="scripts" value="English" checked />English<br />
+        </label>
+      </div>
+    </div>
+
+    <input type="submit" id="searchfont" value="Search" class ="btn
+                                                                btn-primary"/>
+  </form>
+  <div class="hide alert alert-info" id="progress"></div>
+  <div class="hide alert alert-success" id="success"></div>
+  <div class="hide alert alert-error" id="error"></div>
+  <div class="hide "id="result"></div>
+</div>
+<div id="fontslistheader"class="alert alert-info hide"></div>
+<hr />
+<div id="fontslist" ></div>
+<br />
+<h3>Browser Compatibility</h3>
+
+<p>All of the fonts are compatible with all browsers.  Chrome has
+  <a href="http://code.google.com/p/chromium/issues/detail?id=78155">a
+    bug</a>
+  in rendering complex scripts</p>
+
+{% endblock %}

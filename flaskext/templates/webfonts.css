@@ -1,0 +1,11 @@
+{% for font in fonts %}
+
+
+    @font-face { font-family: '{{font.family}}';
+            src: url('{{font.eot}}');
+            src: local('{{font.family}}'),            url('{{font.woff}}') format('woff'),           url('{{font.ttf}}') format('truetype');
+            font-style:normal;      font-style: normal;}
+
+
+
+{% endfor %}
