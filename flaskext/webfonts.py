@@ -19,7 +19,7 @@ class Webfonts(object):
     webfonts. It supports multiple lamguages.
     """
     def __init__(self, app=None):
-        self.app = None
+        self.app = app
         if app is not None:
             self.init_app(app)
 
@@ -29,4 +29,8 @@ class Webfonts(object):
         app.register_blueprint(bp)
 
     def list_fonts(*languages):
-        pass
+        font_list = []
+        for i in fonts:
+            if fonts[i]["Language"] in languages:
+                font_list.append({i: fonts[i]})
+        return font_list
