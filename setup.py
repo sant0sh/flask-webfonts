@@ -24,7 +24,7 @@ setup(
     author_email='your-email-here@example.com',
     description='<enter short description here>',
     long_description=__doc__,
-    packages=['flaskext'],
+    packages = find_packages(),
     include_package_data=True,
     namespace_packages=['flaskext'],
     zip_safe=False,
