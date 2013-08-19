@@ -17,9 +17,9 @@ class WebfontsApiView(View):
                         abort(400)
                 else:
                         fonts = [{'family': f,
-                                  'eot': url_for('webfonts.static', _external=True, filename=self.fonts[f]['eot']),
-                                  'woff': url_for('webfonts.static',  _external=True, filename=self.fonts[f]['woff']),
-                                  'ttf': url_for('webfonts.static', _external=True, filename=self.fonts[f]['ttf'])
+                                  'eot': url_for('bp_api_webfonts.static', _external=True, filename=self.fonts[f]['eot']),
+                                  'woff': url_for('bp_api_webfonts.static',  _external=True, filename=self.fonts[f]['woff']),
+                                  'ttf': url_for('bp_api_webfonts.static', _external=True, filename=self.fonts[f]['ttf'])
                                   } for f in match_request]
                         resp = make_response(render_template('flask_webfonts/webfonts.css', fonts=fonts))
                         resp.mimetype = 'text/css'

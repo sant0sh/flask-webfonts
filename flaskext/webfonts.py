@@ -11,6 +11,7 @@ using the fonts as webfonts.
 
 from .views import WebfontsApiView
 from flask import Blueprint
+import os.path
 
 
 class Webfonts(object):
@@ -32,8 +33,8 @@ class Webfonts(object):
         self.fonts = fonts
         self.url_prefix = api_url_prefix
         self.subdomain = subdomain
-        self.font_folder = font_folder
-        self.blueprint = Blueprint('api_Blueprint', __name__, static_folder=font_folder)
+        self.font_folder = os.path.join(self.app.root_path,font_folder)
+        self.blueprint = Blueprint('bp_api_webfonts', __name__, static_folder=self.font_folder, template_folder="templates")
         self.blueprint.add_url_rule('/', view_func=WebfontsApiView(fonts).as_view('webfonts_api', fonts))
 
         if app is not None:
