@@ -9,7 +9,7 @@ using the fonts as webfonts.
     :license: BSD, see LICENSE for more details.
 """
 
-from .views import WebfontsApiView
+from .views import WebfontsApiView, WebfontsListView
 from flask import Blueprint
 import os.path
 
@@ -35,8 +35,8 @@ class Webfonts(object):
         self.subdomain = subdomain
         self.font_folder = os.path.join(self.app.root_path,font_folder)
         self.blueprint = Blueprint('bp_api_webfonts', __name__, static_folder=self.font_folder, template_folder="templates")
-        self.blueprint.add_url_rule('/', view_func=WebfontsApiView(fonts).as_view('webfonts_api', fonts))
-
+        self.blueprint.add_url_rule('/', view_func=WebfontsApiView.as_view('webfonts_api', fonts))
+        self.blueprint.add_url_rule('/list', view_func=WebfontsListView.as_view('webfonts_list', fonts))
         if app is not None:
             self.init_app(app)
 

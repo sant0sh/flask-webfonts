@@ -1,5 +1,5 @@
 from flask import request, make_response
-from flask import render_template, url_for, abort
+from flask import render_template, url_for, abort, jsonify
 from flask.views import View
 
 
@@ -9,7 +9,7 @@ class WebfontsApiView(View):
 
         def dispatch_request(self):
                 try:
-                        req_fonts = request.args.get('font').split('|')
+                        req_fonts = request.args.getlist('font')
                 except AttributeError:
                         abort(400)
                 match_request = set(req_fonts).intersection(set(self.fonts.keys()))
@@ -25,6 +25,21 @@ class WebfontsApiView(View):
                         resp.mimetype = 'text/css'
                         return resp
 
+class WebfontsListView(View):
+        def __init__(self, fonts):
+                self.fonts = fonts
+
+        def dispatch_request(self):
+                req_lang = request.args.getlist('language')
+                if req_lang:
+                        print(req_lang)
+                        resp = {i: self.fonts[i] for i in self.fonts if self.fonts[i]['Language'] in req_lang}
+                        print(resp)
+                        return jsonify(result=resp)
+                else:
+                        resp = {i: self.fonts[i] for i in self.fonts}
+                        return jsonify(result=resp)
+
 
 class WebfontsGalleryView(View):
         def __init__(self, fonts, template=None):
@@ -35,7 +50,6 @@ class WebfontsGalleryView(View):
 
         def dispatch_request(self):
                 return render_template(self.template)
-
 
 #def init_blueprint(fonts):
 #        bp = Blueprint('webfonts',__name__, template_folder='templates')
