@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bootstrap, from Twitter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+    <!-- Le styles -->
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+
+
+  <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">Silpa Webfonts</a>
+          <div class="nav-collapse collapse">
+
+
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span3">
+          <div class="well sidebar-nav">
+            <ul class="nav nav-list">
+              <li class="nav-header">Sidebar</li>
+              <li class="active"><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+              <li class="nav-header">Sidebar</li>
+              <li><a href="#">Link</a></li>
+              <li><a href="#">Link</a></li>
+            </ul>
+          </div><!--/.well -->
+        </div><!--/span-->
+        <div class="span9">
+          <div class="hero-unit">
+            <h1>Silpa Webfonts</h1>
+            <p>A font showcasing and serving extension for flask
+            microframe work.</p>
+            <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+          </div>
+          <div class="row-fluid">
+            <div id="fontlist" class="span12">
+          fsladfj
+            </div><!--/span-->
+
+          </div><!--/row-->
+        </div><!--/span-->
+      </div><!--/row-->
+
+      <hr>
+
+      <footer>
+        <p>&copy; Company 2013</p>
+      </footer>
+
+    </div><!--/.fluid-container-->
+
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src=" http://codeorigin.jquery.com/jquery-2.0.3.min.js" type="text/javascript">
+
+
+             </script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      $(function(){
+
+      $.get('/webfonts/list',function(d){
+ var fl = $("#fontlist").html("")
+var font_details = d['result']
+      for (var i in d['result']) {
+var fontname = i
+var interface =''
+
+
+interface+= '<div id="tabbable'+fontname+'" class="tabbable">'
+interface += '  <ul class="nav nav-tabs">'
+interface += '    <li class="active"><a href="#pane1'+fontname+'" data-toggle="tab">Info</a></li>'
+interface += '    <li><a href="#pane2'+fontname+'" data-toggle="tab">Glyphs</a></li>'
+interface += '    <li><a href="#pane3'+fontname+'" data-toggle="tab">Preview</a></li>'
+interface += '    <li><a href="#pane4'+fontname+'" data-toggle="tab">Use</a></li>'
+interface += '  </ul>'
+interface += '  <div class="tab-content">'
+interface += '    <div id="pane1'+fontname+'" class="tab-pane active">'
+interface += ''
+interface +="<div id='"+fontname+"' >";
+      interface +="<h1 style='font-family:"+fontname+",sans;'>" + font_details[fontname]['Name']+"</h1>";
+      interface +="<div>License: "+font_details[fontname]['License']+"</div>";
+      interface +="<div>Author: "+font_details[fontname]['Author']+"</div>";
+      interface +="<div>Scripts Supported: "+font_details[fontname]['Scripts']+"</div>";
+      interface +="<div>Family Contains: "+font_details[fontname]['Variants']+"</div>";
+      interface +="</div>"
+
+
+
+interface += '</div>'
+interface += '    <div id="pane2'+fontname+'" class="tab-pane">'
+interface += '    <h4>Pane 2 Content</h4>'
+interface += '      <p> and so on ...</p>'
+interface += '    </div>'
+interface += '    <div id="pane3'+fontname+'" class="tab-pane">'
+interface += '      <h4>Pane 3 Content</h4>'
+interface += '    </div>'
+interface += '    <div id="pane4'+fontname+'" class="tab-pane">'
+interface += '      <h4>Pane 4 Content</h4>'
+interface += '    </div>'
+interface += '  </div><!-- /.tab-content -->'
+interface += '</div><!-- /.tabbable -->'
+fl.append(interface)
+console.log(interface)
+
+
+
+
+
+
+}
+      }
+
+)
+
+      })
+      function getfonts(lang){
+      var fonts
+      $.ajax({
+      url: '/webfonts/list',
+      data: { language: "lang"} ,
+      success: function(data){
+      fonts =  data['result']
+      console.log(fonts)
+      }
+      })
+
+      }
+    </script>
+  </body>
+</html>
