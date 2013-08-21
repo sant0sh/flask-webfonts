@@ -40,6 +40,19 @@ class WebfontsListView(View):
                         resp = {i: self.fonts[i] for i in self.fonts}
                         return jsonify(result=resp)
 
+class WebfontsPreviewTextView(View):
+        def __init__(self,text):
+                self.text = text
+
+        def dispatch_request(self):
+                try:
+                        languages = request.args.getlist('language')
+                        resp = {}
+                        for i in languages:
+                                resp[i] = self.text[i]
+                        return jsonify(result=resp)
+                except AttributeError:
+                        abort(400)
 
 class WebfontsGalleryView(View):
         def __init__(self, fonts, template=None):
