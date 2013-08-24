@@ -14,6 +14,7 @@ from flask import Blueprint
 import os.path
 from text import text
 
+
 class Webfonts(object):
     """
     This class makes flask application serve webfonts from a specified url or
@@ -33,11 +34,19 @@ class Webfonts(object):
         self.fonts = fonts
         self.url_prefix = api_url_prefix
         self.subdomain = subdomain
-        self.font_folder = os.path.join(self.app.root_path,font_folder)
-        self.blueprint = Blueprint('bp_api_webfonts', __name__, static_folder=self.font_folder, template_folder="templates")
-        self.blueprint.add_url_rule('/', view_func=WebfontsApiView.as_view('webfonts_api', fonts))
-        self.blueprint.add_url_rule('/list', view_func=WebfontsListView.as_view('webfonts_list', fonts))
-        self.blueprint.add_url_rule('/text', view_func=WebfontsPreviewTextView.as_view('webfonts_text', text))
+        self.font_folder = os.path.join(self.app.root_path, font_folder)
+        self.blueprint = Blueprint('bp_api_webfonts', __name__,
+                                   static_folder=self.font_folder,
+                                   template_folder="templates")
+        self.blueprint.add_url_rule('/',
+                                    view_func=WebfontsApiView.as_view(
+                                        'webfonts_api', fonts))
+        self.blueprint.add_url_rule('/list',
+                                    view_func=WebfontsListView.as_view(
+                                        'webfonts_list', fonts))
+        self.blueprint.add_url_rule('/text',
+                                    view_func=WebfontsPreviewTextView.as_view(
+                                        'webfonts_text', text))
         if app is not None:
             self.init_app(app)
 

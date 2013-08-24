@@ -16,14 +16,23 @@ class WebfontsApiView(View):
                 if not match_request:
                         abort(400)
                 else:
-                        fonts = [{'family': f,
-                                  'eot': url_for('bp_api_webfonts.static', _external=True, filename=self.fonts[f]['eot']),
-                                  'woff': url_for('bp_api_webfonts.static',  _external=True, filename=self.fonts[f]['woff']),
-                                  'ttf': url_for('bp_api_webfonts.static', _external=True, filename=self.fonts[f]['ttf'])
-                                  } for f in match_request]
+                        fonts = [{'family': f, 'eot':
+                                  url_for('bp_api_webfonts.static',
+                                  _external=True,
+                                  filename=self.fonts[f]['eot']),
+                                  'woff':
+                                  url_for('bp_api_webfonts.static',
+                                  _external=True,
+                                  filename=self.fonts[f]['woff']),
+                                  'ttf':
+                                  url_for('bp_api_webfonts.static',
+                                  _external=True,
+                                  filename=self.fonts[f]['ttf'])}
+                                 for f in match_request]
                         resp = make_response(render_template('flask_webfonts/webfonts.css', fonts=fonts))
                         resp.mimetype = 'text/css'
                         return resp
+
 
 class WebfontsListView(View):
         def __init__(self, fonts):
@@ -33,15 +42,17 @@ class WebfontsListView(View):
                 req_lang = request.args.getlist('language')
                 if req_lang:
                         print(req_lang)
-                        resp = {i: self.fonts[i] for i in self.fonts if self.fonts[i]['Language'] in req_lang}
+                        resp = {i: self.fonts[i] for i in self.fonts
+                                if self.fonts[i]['Language'] in req_lang}
                         print(resp)
                         return jsonify(result=resp)
                 else:
                         resp = {i: self.fonts[i] for i in self.fonts}
                         return jsonify(result=resp)
 
+
 class WebfontsPreviewTextView(View):
-        def __init__(self,text):
+        def __init__(self, text):
                 self.text = text
 
         def dispatch_request(self):
@@ -53,6 +64,7 @@ class WebfontsPreviewTextView(View):
                         return jsonify(result=resp)
                 except AttributeError:
                         abort(400)
+
 
 class WebfontsGalleryView(View):
         def __init__(self, fonts, template=None):
