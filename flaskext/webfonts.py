@@ -52,6 +52,7 @@ class Webfonts(object):
                                         'webfonts_gallery'))
         if app is not None:
             self.init_app(app)
+        self.add_gallery()
 
     def init_app(self, app):
 
@@ -62,8 +63,11 @@ class Webfonts(object):
                                url_prefix=self.url_prefix,
                                subdomain=self.subdomain)
 
-    def add_gallery(self, url_prefix):
-        pass
+
+    def add_gallery(self):
+        self.gallery_bp  = Blueprint('bp_webfonts_gallery', __name__, static_folder="static", template_folder='templates')
+        self.gallery_bp.add_url_rule('/gallery', view_func=WebfontsGalleryView.as_view('webfonts_gallery'))
+        self.app.register_blueprint(self.gallery_bp, url_prefix=self.url_prefix)
 
     def list_fonts(self, *languages):
         font_list = []
