@@ -9,7 +9,7 @@ using the fonts as webfonts.
     :license: BSD, see LICENSE for more details.
 """
 
-from .views import WebfontsApiView, WebfontsListView, WebfontsPreviewTextView
+from .views import WebfontsApiView, WebfontsListView, WebfontsPreviewTextView,WebfontsGalleryView
 from flask import Blueprint
 import os.path
 from text import text
@@ -47,6 +47,9 @@ class Webfonts(object):
         self.blueprint.add_url_rule('/text',
                                     view_func=WebfontsPreviewTextView.as_view(
                                         'webfonts_text', text))
+        self.blueprint.add_url_rule('/gallery',
+                                    view_func=WebfontsGalleryView.as_view(
+                                        'webfonts_gallery'))
         if app is not None:
             self.init_app(app)
 

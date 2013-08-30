@@ -67,9 +67,9 @@ class WebfontsPreviewTextView(View):
 
 
 class WebfontsGalleryView(View):
-        def __init__(self, fonts, template=None):
+        def __init__(self, template=None):
                 if template is None:
-                        self.template = "flask_webfonts/gallery.html"
+                        self.template = "flask_webfonts/webfonts.html"
                 else:
                         self.template = template
 
