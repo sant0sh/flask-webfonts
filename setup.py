@@ -31,7 +31,7 @@ setup(
     setup_requires=['setuptools-git'],
     platforms='any',
     install_requires=[
-        'Flask'
+        'Flask',"PyYAML"
     ],
     classifiers=[
         'Development Status :: 4 - Beta',

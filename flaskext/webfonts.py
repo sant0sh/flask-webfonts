@@ -13,6 +13,7 @@ from .views import WebfontsApiView, WebfontsListView, WebfontsPreviewTextView,We
 from flask import Blueprint
 import os.path
 from text import text
+import yaml
 
 
 class Webfonts(object):
@@ -23,15 +24,14 @@ class Webfonts(object):
     """
     def __init__(
             self,
-            fonts,
             app=None,
-            font_folder="fonts",
             api_url_prefix="/webfonts",
             subdomain=None
     ):
 
         self.app = app
-        self.fonts = fonts
+        config = open(os.path.join(self.app.root_path,"fonts.yaml"))
+        self.fonts = yaml.load(config)
         self.url_prefix = api_url_prefix
         self.subdomain = subdomain
         self.font_folder = os.path.join(self.app.root_path, font_folder)
