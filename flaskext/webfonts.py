@@ -12,9 +12,10 @@ using the fonts as webfonts.
 from .views import (WebfontsApiView, WebfontsListView,
                     WebfontsPreviewTextView, WebfontsGalleryView)
 from flask import Blueprint
-import os.path
 from text import text
+import os.path
 import yaml
+import sys
 
 
 class Webfonts(object):
@@ -32,8 +33,21 @@ class Webfonts(object):
     ):
 
         self.app = app
-        config = open(os.path.join(self.app.root_path, "fonts.yaml"))
-        self.fonts = yaml.load(config)
+        try:
+            config_fonts = open(os.path.join(self.app.root_path, "fonts.yaml"))
+        except IOError:
+            print("You must provide a fonts.yaml file with \
+                  font configuration. Reffer documentation.")
+            sys.exit(0)
+        self.fonts = yaml.load(config_fonts)
+        try:
+            config_text = open(os.path.join(self.app.root_path, "text.yaml"))
+        except IOError:
+            pass
+        else:
+            user_text = yaml.load(config_text)
+            self.text = dict(text.items() + user_text.items())
+
         self.url_prefix = api_url_prefix
         self.subdomain = subdomain
         self.font_folder = os.path.join(self.app.root_path, font_folder)
@@ -48,7 +62,7 @@ class Webfonts(object):
                                         'webfonts_list', self.fonts))
         self.blueprint.add_url_rule('/text',
                                     view_func=WebfontsPreviewTextView.as_view(
-                                        'webfonts_text', text))
+                                        'webfonts_text', self.text))
         self.blueprint.add_url_rule('/gallery',
                                     view_func=WebfontsGalleryView.as_view(
                                         'webfonts_gallery'))
