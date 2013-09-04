@@ -117,11 +117,11 @@ var interface =''
 
             interface += '</div>'
           interface += '    <div id="pane2'+fontname+'" class="tab-pane">'
-            interface += '    <h4>Pane 2 Content</h4>'
-            interface += '      <p> and so on ...</p>'
+            interface += '    <h4>Preview</h4>'
             interface += '    </div>'
           interface += '    <div id="pane3'+fontname+'" class="tab-pane">'
             interface += '      <h4>Pane 3 Content</h4>'
+            interface += '      <textarea  id= rows="8" class="span12"></textarea> '
             interface += '    </div>'
           interface += '    <div id="pane4'+fontname+'" class="tab-pane">'
             interface += '      <h4>Pane 4 Content</h4>'
@@ -165,7 +165,7 @@ glyphs(font_details[fontname]['Glyphs'],fontname,$("#pane2"+fontname))
                                 tablemarkup+="</tr></table>";
                                 $("#glyphs"+fontname).html(tablemarkup)
                                 $("#glyphtable"+fontname).css('font-family', fontname) ;
-                                $("#glyphtable"+fontname).css('font-size', '24px');
+                                $("#glyphtable"+fontname).css('font-size', '34px');
 
                                 element.html(tablemarkup);
 }
