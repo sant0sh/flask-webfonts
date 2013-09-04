@@ -9,7 +9,8 @@ using the fonts as webfonts.
     :license: BSD, see LICENSE for more details.
 """
 
-from .views import WebfontsApiView, WebfontsListView, WebfontsPreviewTextView,WebfontsGalleryView
+from .views import (WebfontsApiView, WebfontsListView,
+                    WebfontsPreviewTextView, WebfontsGalleryView)
 from flask import Blueprint
 import os.path
 from text import text
@@ -25,12 +26,13 @@ class Webfonts(object):
     def __init__(
             self,
             app=None,
+            font_folder='fonts',
             api_url_prefix="/webfonts",
             subdomain=None
     ):
 
         self.app = app
-        config = open(os.path.join(self.app.root_path,"fonts.yaml"))
+        config = open(os.path.join(self.app.root_path, "fonts.yaml"))
         self.fonts = yaml.load(config)
         self.url_prefix = api_url_prefix
         self.subdomain = subdomain
@@ -40,10 +42,10 @@ class Webfonts(object):
                                    template_folder="templates")
         self.blueprint.add_url_rule('/',
                                     view_func=WebfontsApiView.as_view(
-                                        'webfonts_api', fonts))
+                                        'webfonts_api', self.fonts))
         self.blueprint.add_url_rule('/list',
                                     view_func=WebfontsListView.as_view(
-                                        'webfonts_list', fonts))
+                                        'webfonts_list', self.fonts))
         self.blueprint.add_url_rule('/text',
                                     view_func=WebfontsPreviewTextView.as_view(
                                         'webfonts_text', text))
@@ -63,11 +65,15 @@ class Webfonts(object):
                                url_prefix=self.url_prefix,
                                subdomain=self.subdomain)
 
-
     def add_gallery(self):
-        self.gallery_bp  = Blueprint('bp_webfonts_gallery', __name__, static_folder="static", template_folder='templates')
-        self.gallery_bp.add_url_rule('/gallery', view_func=WebfontsGalleryView.as_view('webfonts_gallery'))
-        self.app.register_blueprint(self.gallery_bp, url_prefix=self.url_prefix)
+        self.gallery_bp = Blueprint('bp_webfonts_gallery', __name__,
+                                    static_folder="static",
+                                    template_folder='templates')
+        self.gallery_bp.add_url_rule('/gallery',
+                                     view_func=WebfontsGalleryView.as_view(
+                                        'webfonts_gallery'))
+        self.app.register_blueprint(self.gallery_bp,
+                                    url_prefix=self.url_prefix)
 
     def list_fonts(self, *languages):
         font_list = []
