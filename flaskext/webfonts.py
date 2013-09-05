@@ -63,9 +63,6 @@ class Webfonts(object):
         self.blueprint.add_url_rule('/text',
                                     view_func=WebfontsPreviewTextView.as_view(
                                         'webfonts_text', self.text))
-        self.blueprint.add_url_rule('/gallery',
-                                    view_func=WebfontsGalleryView.as_view(
-                                        'webfonts_gallery'))
         if app is not None:
             self.init_app(app)
         self.add_gallery()
