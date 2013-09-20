@@ -56,14 +56,17 @@ class WebfontsPreviewTextView(View):
                 self.text = text
 
         def dispatch_request(self):
-                try:
-                        languages = request.args.getlist('language')
-                        resp = {}
-                        for i in languages:
-                                resp[i] = self.text[i]
-                        return jsonify(result=resp)
-                except AttributeError:
-                        abort(400)
+                if request.args.haskey('language'):
+                        try:
+                                languages = request.args.getlist('language')
+                                resp = {}
+                                for i in languages:
+                                        resp[i] = self.text[i]
+                                        return jsonify(result=resp)
+                        except ValueError:
+                                abort(400)
+                else:
+                        return jsonify(result=text)
 
 
 class WebfontsGalleryView(View):
