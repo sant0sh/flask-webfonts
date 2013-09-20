@@ -62,7 +62,6 @@
           </div>
           <div class="row-fluid">
             <div id="fontlist" class="span12">
-          fsladfj
             </div><!--/span-->
 
           </div><!--/row-->
@@ -78,35 +77,40 @@
     </div><!--/.fluid-container-->
 
 
-    <!-- Le javascript
-    ================================================== -->
+    <!-- Le javascript ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
-    <script src=" http://codeorigin.jquery.com/jquery-2.0.3.min.js" type="text/javascript">
-
-
-             </script>
+    <script src=" http://codeorigin.jquery.com/jquery-2.0.3.min.js" type="text/javascript"></script>
     <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     <script type="text/javascript">
+      var font_details;
       $(function(){
-
       $.get('/webfonts/list',function(d){
- var fl = $("#fontlist").html("")
-var font_details = d['result']
+      var fl = $("#fontlist").html("")
+      font_details = d['result']
+var repo ={
+repository:{
+base: "{{url_for("bp_api_webfonts.static",filename="")}}"
+,fonts: font_details
+}
+}
+$('body').webfonts(repo)
+$wf = $('body').data("webfonts")
       for (var i in d['result']) {
-var fontname = i
-var interface =''
-      interface+= '<div id="tabbable'+fontname+'" class="tabbable">'
+      var fontname = i
+      var interface =''
+      interface+= '<hr/><div id="tabbable'+fontname+'" class="tabbable">'
+        interface +="<h1 style='font-family:"+fontname+",sans;'>" + font_details[fontname]['Name']+"</h1>";
         interface += '  <ul class="nav nav-tabs">'
           interface += '    <li class="active"><a href="#pane1'+fontname+'" data-toggle="tab">Info</a></li>'
           interface += '    <li><a href="#pane2'+fontname+'" data-toggle="tab">Glyphs</a></li>'
           interface += '    <li><a href="#pane3'+fontname+'" data-toggle="tab">Preview</a></li>'
           interface += '    <li><a href="#pane4'+fontname+'" data-toggle="tab">Use</a></li>'
           interface += '  </ul>'
+
         interface += '  <div class="tab-content">'
           interface += '    <div id="pane1'+fontname+'" class="tab-pane active">'
             interface += ''
             interface +="<div id='"+fontname+"' >";
-              interface +="<h1 style='font-family:"+fontname+",sans;'>" + font_details[fontname]['Name']+"</h1>";
               interface +="<div>License: "+font_details[fontname]['License']+"</div>";
               interface +="<div>Author: "+font_details[fontname]['Author']+"</div>";
               interface +="<div>Scripts Supported: "+font_details[fontname]['Scripts']+"</div>";
@@ -116,37 +120,49 @@ var interface =''
 
 
             interface += '</div>'
-          interface += '    <div id="pane2'+fontname+'" class="tab-pane">'
-            interface += '    <h4>Preview</h4>'
+          interface += '    <div id="pane2'+fontname+'" class="tab-pane '+fontname +' ">'
             interface += '    </div>'
-          interface += '    <div id="pane3'+fontname+'" class="tab-pane">'
-            interface += '      <h4>Pane 3 Content</h4>'
-            interface += '      <textarea  id= rows="8" class="span12"></textarea> '
+          interface += '    <div id="pane3'+fontname+'" class="tab-pane ">'
+            interface += '    <h4>Preview</h4>'
+            interface+='  this is how it is going to look.'
+            interface += '      <textarea  id= rows="8" class="span12 '+fontname+' "></textarea> '
             interface += '    </div>'
           interface += '    <div id="pane4'+fontname+'" class="tab-pane">'
-            interface += '      <h4>Pane 4 Content</h4>'
-            interface += '    </div>'
+            interface += '      <h4>To use this font</h4>'
+            interface += 'add this to the head of your html file'
+            interface += '<pre>&lt;link href="{{url_for('bp_api_webfonts.webfonts_api',_external=True)}}?font='+fontname+'" type="stylesheet"/&gt;></pre>'
+            interface += 'Or you can also use css imports by adding this to your file'
+            interface += '<pre> @import("{{url_for('bp_api_webfonts.webfonts_api',_external=True)}}?font='+fontname+'")</pre>'
+interface+='<pre>'
+interface+='&lt;style&gt;\n'
+interface+='body { \n'
+interface+='   font-family:"'+fontname+'",serif; \n'
+interface+='   font-size: 12px;\n'
+interface+='   font-style: regular;\n'
+interface+='   text-shadow: 2px 2px 2px #aaa;\n'
+interface+='   letter-spacing: 8em;\n'
+interface+='   word-spacing: 8em;\n'
+interface+='   line-height: 1;\n'
+interface+='} \n '
+interface+='&lt;/style&gt;\n'
+interface+='</pre>'
+interface += 'and finally to use the imported fonts add something like this to you style sheet\n'
+interface += '   </div>'
           interface += '  </div><!-- /.tab-content -->'
         interface += '</div><!-- /.tabbable -->'
       fl.append(interface)
 glyphs(font_details[fontname]['Glyphs'],fontname,$("#pane2"+fontname))
 
-
-
-
-
-
+$wf.apply(fontname,$("."+fontname))
 }
-      }
 
+
+ }
 )
 
-      })
-
-
+})
 
       function glyphs(range, fontname,element){
-      console.log(fontname)
       var start = range.split(":") [0]	;
       var end = range.split(":") [1]	;
       var tablemarkup='';
@@ -183,8 +199,10 @@ glyphs(font_details[fontname]['Glyphs'],fontname,$("#pane2"+fontname))
       console.log(fonts)
       }
       })
-
       }
+
+
+
     </script>
       <script type="text/javascript" src="{{url_for('bp_webfonts_gallery.static',filename='jquery.webfonts.js')}}"></script>
 
