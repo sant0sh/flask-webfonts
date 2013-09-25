@@ -1,7 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Bootstrap, from Twitter</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+
+    <!-- Le styles -->
+    <style>
+      body {
+        padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+      }
+    </style>
+
+  </head>
+
+  <body>
+
+
+
+  <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="brand" href="#">Silpa Webfonts</a>
+          <div class="nav-collapse collapse">
+
+
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
     <div class="container-fluid">
       <div class="row-fluid">
 
-        <div class="span12">
+        <div class="offset1 span10">
           <div class="hero-unit">
             <h1>Silpa Webfonts</h1>
             <p>A font showcasing and serving extension for flask
@@ -18,15 +58,18 @@
 
       <hr>
 
+      <footer>
+        <p>&copy; Company 2013</p>
+      </footer>
 
     </div><!--/.fluid-container-->
 
 
     <!-- Le javascript ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
+    <script src=" http://codeorigin.jquery.com/jquery-2.0.3.min.js" type="text/javascript"></script>
+    <script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     <script type="text/javascript">
-//      var preview_text
-//      $.get("{{url_for("bp_api_webfonts.webfonts_text")}}",function(data){preview_text = data["result"]})
       var font_details;
       $(function(){
       $.get('/webfonts/list',function(d){
@@ -69,8 +112,7 @@ $wf = $('body').data("webfonts")
             interface += '    </div>'
           interface += '    <div id="pane3'+fontname+'" class="tab-pane ">'
             interface += '    <h4>Preview</h4>'
-            interface+='  this is how it&#39;s going to look'
-            interface+='<br/>'
+            interface+='  this is how it is going to look.'
             interface += '      <textarea  id= rows="8" class="span12 '+fontname+' "></textarea> '
             interface += '    </div>'
           interface += '    <div id="pane4'+fontname+'" class="tab-pane">'
@@ -79,7 +121,6 @@ $wf = $('body').data("webfonts")
             interface += '<pre>&lt;link href="{{url_for('bp_api_webfonts.webfonts_api',_external=True)}}?font='+fontname+'" type="stylesheet"/&gt;></pre>'
             interface += 'Or you can also use css imports by adding this to your file'
             interface += '<pre> @import("{{url_for('bp_api_webfonts.webfonts_api',_external=True)}}?font='+fontname+'")</pre>'
-interface += 'and finally to use the imported fonts add something like this to you style sheet\n'
 interface+='<pre>'
 interface+='&lt;style&gt;\n'
 interface+='body { \n'
@@ -93,6 +134,7 @@ interface+='   line-height: 1;\n'
 interface+='} \n '
 interface+='&lt;/style&gt;\n'
 interface+='</pre>'
+interface += 'and finally to use the imported fonts add something like this to you style sheet\n'
 interface += '   </div>'
           interface += '  </div><!-- /.tab-content -->'
         interface += '</div><!-- /.tabbable -->'
@@ -151,3 +193,6 @@ $wf.apply(fontname,$("."+fontname))
 
     </script>
       <script type="text/javascript" src="{{url_for('bp_webfonts_gallery.static',filename='jquery.webfonts.js')}}"></script>
+
+  </body>
+</html>
