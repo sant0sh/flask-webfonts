@@ -8,7 +8,7 @@ you can also pass in api_url_prefix argument as a url prefix, defaults to /webfo
 
 
 ###Url Rules
-
+```text
 <Rule '/webfonts/list?language=Malayalam&language=Tamil' (HEAD, OPTIONS, GET) -> bp_api_webfonts.webfonts_list>
 
 
@@ -24,3 +24,4 @@ serves the css files from here
 
  <Rule '/static/webfonts.html' (HEAD, OPTIONS, GET) -> static>
 A temporary interface decoupled from the extension
+```
